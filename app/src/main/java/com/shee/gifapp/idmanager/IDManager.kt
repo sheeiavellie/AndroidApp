@@ -1,7 +1,7 @@
 package com.shee.gifapp.idmanager
 
 object IDManager {
-    public var currentID: Int = 0
+    public var currentID: Int = -1
 
     public fun updateID(state: Int) {
         when(state) {

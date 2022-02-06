@@ -11,10 +11,11 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.shee.gifapp.ApiReq
-import com.shee.gifapp.BASE_URL
+import com.shee.gifapp.const.BASE_URL
 import com.shee.gifapp.MainActivity
 import com.shee.gifapp.R
-import com.shee.gifapp.cachemanager.cacheManager
+import com.shee.gifapp.api.DataJson
+import com.shee.gifapp.cachemanager.CacheManager
 import com.shee.gifapp.cachemanager.reqCache
 import com.shee.gifapp.idmanager.IDManager
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +29,12 @@ import java.lang.Exception
 
 class DataManager {
 
-    private var cm = cacheManager()
+    private var cm = CacheManager()
     public fun getStartData(a: MainActivity) {
 
     }
     public fun getNetworkData(a: MainActivity) {
+        IDManager.updateID(0)
         val api = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -47,11 +49,10 @@ class DataManager {
 
                     withContext(Dispatchers.Main) {
                         a.binding.mainImageProgressbar.visibility = View.VISIBLE
-                        PrintData(a,"https" + data.gifURL.drop(4), data.description)
+                        printData(a,"https" + data.gifURL.drop(4), data.description)
 
-                        cm.CreateCacheFile(a, data)
+                        cm.createCacheFile(a, data)
                         reqCache.add(IDManager.currentID, cm.getFileName())
-                        IDManager.updateID(0)
                     }
                 }
             } catch (e: Exception) {
@@ -62,13 +63,18 @@ class DataManager {
         }
     }
 
-    public fun getCacheData(a: MainActivity) {
-
-
+    public fun getCacheData(a: MainActivity, statement: Int) {
+        var data: DataJson? = cm.loadFile(a, reqCache.dataMap.get(IDManager.currentID - 1))
+        try {
+            printData(a, "https" + data!!.gifURL.drop(4), data!!.description)
+            IDManager.updateID(statement)
+        }catch (e: Exception) {
+            Toast.makeText(a.applicationContext, "Data Null Error", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
-    public fun PrintData(a:MainActivity, url: String, des: String) {
+    public fun printData(a:MainActivity, url: String, des: String) {
         Glide.with(a.applicationContext)
             .load(url)
             .centerCrop()

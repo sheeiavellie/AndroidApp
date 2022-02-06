@@ -1,77 +1,52 @@
 package com.shee.gifapp.cachemanager
 
-import android.content.Context
-import android.provider.ContactsContract
 import android.widget.Toast
 import com.google.gson.Gson
 import com.shee.gifapp.MainActivity
 import com.shee.gifapp.api.DataJson
-import com.shee.gifapp.idmanager.IDManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.InputStream
 import java.lang.Exception
 
-class cacheManager {
-    private  var FileName: String = "def"
+class CacheManager {
+    private  var fileName: String = "def"
 
     public fun setFileName(fn: String) {
-        this.FileName = fn
+        this.fileName = fn
     }
 
     public fun getFileName(): String {
-        return this.FileName
+        return this.fileName
     }
 
-    private fun serialize (data: DataJson): String {
-        val gson = Gson()
-        return gson.toJson(data)
-    }
-
-    private fun deserialize (data: String): DataJson {
-        val gson = Gson()
-        //var ret : DataJson = gson.fromJ
-    }
-
-    public fun CreateCacheFile(a: MainActivity, data: DataJson?)
+    public fun createCacheFile(a: MainActivity, data: DataJson)
     {
         val gson = Gson()
         var jsonString: String = gson.toJson(data)
 
         var path = a.cacheDir
+
         try {
-            var ff = File.createTempFile("GA", ".json", path)
+            var ff = File.createTempFile("gatemp", ".json", path)
             ff.writeText(jsonString)
 
             setFileName(ff.name)
 
         } catch (e: Exception) {
-                Toast.makeText(a.applicationContext, "API Error", Toast.LENGTH_SHORT).show()
+            Toast.makeText(a.applicationContext, "Create cache Error", Toast.LENGTH_SHORT).show()
         }
     }
-    public fun LoadFile(context: Context, id: Int): String? {
+    public fun loadFile(a: MainActivity, fn: String?): DataJson? {
+        val gson = Gson()
 
-        var input: InputStream? = null
-        var jsonString: String
+        var path = a.cacheDir.absolutePath + "/" + fn;
 
         try {
-            input = context.assets.open(reqCache.dataMap[id]!!)
-
-            var size = input.available()
-            val buffer = ByteArray(size)
-
-            input.read(buffer)
-            jsonString = String(buffer)
-            return jsonString
-
-        } catch (e: Exception){
-            e.printStackTrace()
-
-        } finally {
-            if (input != null) {
-                input.close()
-            }
+            val jsonString: String = File(path).readText(Charsets.UTF_8)
+            return gson.fromJson(jsonString, DataJson::class.java)
+        } catch (e: Exception) {
+            System.out.println("Error" + e.toString())
+            System.out.println(path)
+            Toast.makeText(a.applicationContext, "Load Cache Error", Toast.LENGTH_SHORT).show()
         }
         return null
     }
