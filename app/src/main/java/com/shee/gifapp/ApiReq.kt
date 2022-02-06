@@ -10,7 +10,7 @@ interface ApiReq {
     @GET("/random?json=true")
     fun getRandom(): Call<DataJson>
 
-    @GET("/latest/{page}?json=true")
+    @GET("/{tom}/{page}?json=true")
     fun getLatest(@Path("page") page: Int): Call<ResultJson>
 
     @GET("/hot/{page}?json=true")

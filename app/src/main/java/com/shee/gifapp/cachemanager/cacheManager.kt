@@ -18,6 +18,8 @@ class CacheManager {
         return this.fileName
     }
 
+
+
     public fun createCacheFile(a: MainActivity, data: DataJson)
     {
         val gson = Gson()

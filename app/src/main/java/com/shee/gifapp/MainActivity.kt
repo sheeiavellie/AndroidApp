@@ -25,4 +25,9 @@ class MainActivity : AppCompatActivity() {
             bttmanager.back(this)
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+        this.cacheDir.deleteRecursively()
+    }
 }

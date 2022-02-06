@@ -34,7 +34,6 @@ class DataManager {
 
     }
     public fun getNetworkData(a: MainActivity) {
-        IDManager.updateID(0)
         val api = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -51,6 +50,7 @@ class DataManager {
                         a.binding.mainImageProgressbar.visibility = View.VISIBLE
                         printData(a,"https" + data.gifURL.drop(4), data.description)
 
+                        IDManager.updateID(0)
                         cm.createCacheFile(a, data)
                         reqCache.add(IDManager.currentID, cm.getFileName())
                     }
@@ -64,10 +64,11 @@ class DataManager {
     }
 
     public fun getCacheData(a: MainActivity, statement: Int) {
-        var data: DataJson? = cm.loadFile(a, reqCache.dataMap.get(IDManager.currentID - 1))
+        IDManager.updateID(statement)
+        var data: DataJson? = cm.loadFile(a, reqCache.dataMap.get(IDManager.currentID))
         try {
             printData(a, "https" + data!!.gifURL.drop(4), data!!.description)
-            IDManager.updateID(statement)
+
         }catch (e: Exception) {
             Toast.makeText(a.applicationContext, "Data Null Error", Toast.LENGTH_SHORT).show()
         }

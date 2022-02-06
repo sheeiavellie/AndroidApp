@@ -13,7 +13,7 @@ class BttManager {
     }
 
     public fun next(a: MainActivity) {
-        if(IDManager.currentID + 1 < reqCache.dataMap.size)
+        if(reqCache.dataMap.get(IDManager.currentID + 1) != null)
         {
             dm.getCacheData(a, 0)
         }
